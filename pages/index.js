@@ -93,29 +93,36 @@ export default function App() {
   }
 
   return (
-    <Container>
-      <LeftPanel>
-        <Header
-          countries={countries}
-          onChangeCountry={onChangeCountryHandler}
-        />
-        <Cards data={{ ...selectedCountry, vaccinated }} />
-      </LeftPanel>
-      <RightPanel>
-        <CardContent>
-          <SectionTitle>Ranking de casos</SectionTitle>
-          <Table countries={countries} />
-        </CardContent>
-      </RightPanel>
-      {/* Map */}
-      {/* Ranking */}
-    </Container>
+    <Wrapper>
+      <Container>
+        <LeftPanel>
+          <Header
+            countries={countries}
+            onChangeCountry={onChangeCountryHandler}
+          />
+          <Cards data={{ ...selectedCountry, vaccinated }} />
+        </LeftPanel>
+        <RightPanel>
+          <CardContent>
+            <SectionTitle>Ranking de casos</SectionTitle>
+            <Table countries={countries} />
+          </CardContent>
+        </RightPanel>
+        {/* Map */}
+        {/* Ranking */}
+      </Container>
+    </Wrapper>
   )
 }
 
+const Wrapper = styled.div`
+  max-width: 1080px;
+  margin: 30px auto 0 auto;
+`
+
 const Container = styled.div`
   display: flex;
-  margin: 30px 10% 0;
+  margin: 0 30px;
 `
 
 const LeftPanel = styled.div`

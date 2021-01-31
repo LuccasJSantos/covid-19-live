@@ -4,8 +4,8 @@ import styled from 'styled-components'
 import { numberFormat } from '../util'
 
 function Table({ countries }) {
-  const getCountryTableRows = ({ country, cases }, i) => (
-    <TableRow key={country} odd={i % 2}>
+  const getCountryTableRows = ({ id, country, cases }, i) => (
+    <TableRow key={id} odd={i % 2}>
       <td>{country}</td>
       <td>
         <strong style={{ fontWeight: 600 }}>{numberFormat(cases)}</strong>
@@ -17,8 +17,11 @@ function Table({ countries }) {
 
   const sortByCases = R.sort(byCases)
 
-  const mapThroughCountries = R.pipe(sortByCases, R.map(getCountryTableRows))
-
+  const mapThroughCountries = R.pipe(
+    sortByCases,
+    R.addIndex(R.map)(getCountryTableRows),
+  )
+  debugger
   return <Container>{mapThroughCountries(countries)}</Container>
 }
 
