@@ -1,65 +1,133 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { useEffect, useState } from 'react'
+import { Card, CardContent } from '@material-ui/core'
+import styled from 'styled-components'
+import * as R from 'ramda'
 
-export default function Home() {
+import Header from '../components/Header'
+import Cards from '../components/Cards'
+import Table from '../components/Table'
+
+export default function App() {
+  const [countries, setCountries] = useState([])
+  const [selectedCountry, setSelectedCountry] = useState({})
+  const [vaccinated, setVaccinated] = useState(0)
+
+  const getRequiredPropsFromCountries = ({ country, cases, countryInfo }) => ({
+    country,
+    cases,
+    id: countryInfo.iso3,
+    flag: countryInfo.flag,
+  })
+
+  const getRequiredPropsFromSelected = country => ({
+    population: country.population,
+    cases: country.cases,
+    todayCases: country.todayCases,
+    recovered: country.recovered,
+    deaths: country.deaths,
+    todayDeaths: country.todayDeaths,
+    tests: country.tests,
+    vaccinated: 0,
+  })
+
+  const setVaccineAll = vaccine => {
+    const [data] = Object.entries(vaccine)
+
+    setVaccinated(data[1])
+  }
+
+  const setVaccineCountry = ({ timeline }) => {
+    if (!timeline) {
+      return setVaccinated(0)
+    }
+    const [data] = Object.entries(timeline)
+
+    setVaccinated(data[1])
+  }
+
+  useEffect(() => {
+    fetch('https://disease.sh/v3/covid-19/countries')
+      .then(response => response.json())
+      .then(R.map(getRequiredPropsFromCountries))
+      .then(setCountries)
+
+    fetchWorldWideVaccine()
+  }, [])
+
+  const fetchWorldWideVaccine = () => {
+    const fetchVaccineAll = () => {
+      return fetch(
+        'https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=1',
+      ).then(response => response.json())
+    }
+
+    fetch('https://disease.sh/v3/covid-19/all')
+      .then(response => response.json())
+      .then(getRequiredPropsFromSelected)
+      .then(setSelectedCountry)
+      .then(fetchVaccineAll)
+      .then(setVaccineAll)
+  }
+
+  const fetchCountryVaccine = id => {
+    const fetchVaccineCountry = () => {
+      return fetch(
+        `https://disease.sh/v3/covid-19/vaccine/coverage/countries/${id}?lastdays=1`,
+      ).then(response => response.json())
+    }
+
+    fetch(`https://disease.sh/v3/covid-19/countries/${id}?strict=true`)
+      .then(response => response.json())
+      .then(getRequiredPropsFromSelected)
+      .then(setSelectedCountry)
+      .then(fetchVaccineCountry)
+      .then(setVaccineCountry)
+  }
+
+  const onChangeCountryHandler = id => {
+    R.ifElse(
+      R.equals('worldwide'),
+      fetchWorldWideVaccine,
+      fetchCountryVaccine,
+    )(id)
+  }
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+    <Container>
+      <LeftPanel>
+        <Header
+          countries={countries}
+          onChangeCountry={onChangeCountryHandler}
+        />
+        <Cards data={{ ...selectedCountry, vaccinated }} />
+      </LeftPanel>
+      <RightPanel>
+        <CardContent>
+          <SectionTitle>Ranking de casos</SectionTitle>
+          <Table countries={countries} />
+        </CardContent>
+      </RightPanel>
+      {/* Map */}
+      {/* Ranking */}
+    </Container>
   )
 }
+
+const Container = styled.div`
+  display: flex;
+  margin: 30px 10% 0;
+`
+
+const LeftPanel = styled.div`
+  flex: 4;
+`
+
+const RightPanel = styled(Card)`
+  margin-left: 20px;
+  flex: 2;
+`
+
+const SectionTitle = styled.h3`
+  font-weight: 500;
+  margin-bottom: 15px;
+`
