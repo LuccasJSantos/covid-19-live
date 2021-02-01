@@ -6,7 +6,7 @@ import InfoCard from './InfoCard'
 
 const cardsWidth = '210px'
 
-function Cards({ data }) {
+function Cards({ data, selected, onChangeFilter }) {
   return (
     <Container>
       <PopulationContainer>
@@ -14,40 +14,55 @@ function Cards({ data }) {
         <PopulationValue>{numberAbrevFormat(data.population)}</PopulationValue>
       </PopulationContainer>
       <InfoCard
+        name='cases'
         title='Casos'
         value={data.cases}
         subValue={data.todayCases}
         isSubValuePercent={false}
         badgeColor='#2891AC'
+        selected={selected.name === 'cases'}
+        onClick={onChangeFilter}
       />
       <InfoCard
+        name='recovered'
         title='Recuperadxs'
         value={data.recovered}
         subValue={data.todayRecovered}
         isSubValuePercent={false}
         badgeColor='#6FAC28'
+        selected={selected.name === 'recovered'}
+        onClick={onChangeFilter}
       />
       <InfoCard
+        name='deaths'
         title='Mortes'
         value={data.deaths}
         subValue={data.todayDeaths}
         width={cardsWidth}
         isSubValuePercent={false}
         badgeColor='#E45D5D'
+        selected={selected.name === 'deaths'}
+        onClick={onChangeFilter}
       />
       <InfoCard
+        name='tests'
         title='Testes'
         value={data.tests}
         subValue={data.tests / data.population}
         width={cardsWidth}
-        badgeColor='#ACACAC'
+        badgeColor='#716CFB'
+        selected={selected.name === 'tests'}
+        onClick={onChangeFilter}
       />
       <InfoCard
+        name='vaccinated'
         title='Vacinadxs'
         value={data.vaccinated}
         subValue={data.vaccinated / data.population}
         width={cardsWidth}
-        badgeColor='#716CFB'
+        badgeColor='#ACACAC'
+        selected={selected.name === 'vaccinated'}
+        onClick={onChangeFilter}
       />
     </Container>
   )

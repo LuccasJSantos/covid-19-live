@@ -4,7 +4,7 @@ import { MenuItem, Select } from '@material-ui/core'
 
 import styled from 'styled-components'
 
-function Header({ countries, onChangeCountry }) {
+function Header({ countries, color, onChangeCountry }) {
   const [selectedCountry, setSelectedCountry] = useState('worldwide')
   const [flag, setFlag] = useState('')
 
@@ -28,7 +28,7 @@ function Header({ countries, onChangeCountry }) {
 
   return (
     <Container>
-      <h2>COVID 19 Live</h2>
+      <h2 style={{ color }}>COVID 19 Live</h2>
       <CountrySelector>
         <CountryFlag src={flag} />
         <Select

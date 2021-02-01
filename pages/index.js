@@ -8,6 +8,8 @@ import Header from '../components/Header'
 import Cards from '../components/Cards'
 import Table from '../components/Table'
 
+import { getByName } from '../models/InfoCard'
+
 export default function App() {
   const [countries, setCountries] = useState([])
   const [selectedCountry, setSelectedCountry] = useState({})
@@ -17,7 +19,6 @@ export default function App() {
     color: '#2891AC',
     id: 'worldwide',
   })
-  const [mapCountries, setMapCountries] = useState([])
 
   const getRequiredPropsFromCountries = country => ({
     country: country.country,
@@ -63,7 +64,6 @@ export default function App() {
       .then(response => response.json())
       .then(R.map(getRequiredPropsFromCountries))
       .then(setCountries)
-      .then(setMapCountries)
 
     fetchWorldWideVaccine()
   }, [])
@@ -109,6 +109,17 @@ export default function App() {
     )(id)
   }
 
+  const onChangeSelectedFilter = name => {
+    if (name === 'vaccinated') {
+      return
+    }
+
+    const infoCardValue = getByName(name)
+    const filter = R.mergeRight(selectedFilter, infoCardValue)
+
+    setSelectedFilter(filter)
+  }
+
   const MapSSR = dynamic(() => import('../components/Map'))
 
   return (
@@ -117,9 +128,14 @@ export default function App() {
         <LeftPanel>
           <Header
             countries={countries}
+            color={selectedFilter.color}
             onChangeCountry={onChangeCountryHandler}
           />
-          <Cards data={{ ...selectedCountry, vaccinated }} />
+          <Cards
+            data={{ ...selectedCountry, vaccinated }}
+            selected={selectedFilter}
+            onChangeFilter={onChangeSelectedFilter}
+          />
           <MapSSR countries={countries} filter={selectedFilter} />
         </LeftPanel>
         <RightPanel>

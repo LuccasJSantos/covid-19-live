@@ -5,11 +5,14 @@ import { Card, CardContent } from '@material-ui/core'
 import { numberAbrevFormat, percentFormat } from '../util'
 
 function InfoCard({
+  name,
   title,
   value,
   subValue,
   badgeColor,
+  selected,
   isSubValuePercent = true,
+  onClick,
 }) {
   const formatSubValue = R.ifElse(
     () => isSubValuePercent,
@@ -18,8 +21,8 @@ function InfoCard({
   )
 
   return (
-    <Container>
-      <Badge color={badgeColor} />
+    <Container onClick={() => onClick(name)}>
+      <Badge color={badgeColor} selected={selected} />
       <CardStyled>
         <CardContainer>
           <h3>{title}</h3>
@@ -35,16 +38,18 @@ function InfoCard({
 
 const Container = styled.div`
   position: relative;
+  cursor: pointer;
 `
 
 const Badge = styled.div`
   position: absolute;
-  width: 6px;
-  height: 40px;
+  width: ${props => (props.selected ? '12px' : '6px')};
+  height: ${props => (props.selected ? '123px' : '40px')};
   background-color: ${props => props.color};
-  top: 50%;
-  left: -3px;
-  border-radius: 44px;
+  top: ${props => (props.selected ? '24%' : '50%')};
+  left: ${props => (props.selected ? '-6px' : '-3px')};
+  border-radius: ${props => (props.selected ? '44px 0 0 44px' : '44px')};
+  transition: all ease-out 0.3s;
 `
 
 const CardStyled = styled(Card)`
