@@ -29,8 +29,9 @@ function Cards({ data }) {
       <InfoCard
         title='Mortes'
         value={data.deaths}
-        subValue={data.deaths / data.population}
+        subValue={data.todayDeaths}
         width={cardsWidth}
+        isSubValuePercent={false}
         badgeColor='#E45D5D'
       />
       <InfoCard
