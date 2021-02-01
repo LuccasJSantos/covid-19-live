@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { Card, CardContent } from '@material-ui/core'
 import styled from 'styled-components'
@@ -11,12 +12,23 @@ export default function App() {
   const [countries, setCountries] = useState([])
   const [selectedCountry, setSelectedCountry] = useState({})
   const [vaccinated, setVaccinated] = useState(0)
+  const [selectedFilter, setSelectedFilter] = useState({
+    name: 'cases',
+    color: '#2891AC',
+    id: 'worldwide',
+  })
+  const [mapCountries, setMapCountries] = useState([])
 
-  const getRequiredPropsFromCountries = ({ country, cases, countryInfo }) => ({
-    country,
-    cases,
-    id: countryInfo.iso3,
-    flag: countryInfo.flag,
+  const getRequiredPropsFromCountries = country => ({
+    country: country.country,
+    cases: country.cases,
+    deaths: country.deaths,
+    recovered: country.recovered,
+    tests: country.tests,
+    id: country.countryInfo.iso3,
+    flag: country.countryInfo.flag,
+    lat: country.countryInfo.lat,
+    long: country.countryInfo.long,
   })
 
   const getRequiredPropsFromSelected = country => ({
@@ -51,6 +63,7 @@ export default function App() {
       .then(response => response.json())
       .then(R.map(getRequiredPropsFromCountries))
       .then(setCountries)
+      .then(setMapCountries)
 
     fetchWorldWideVaccine()
   }, [])
@@ -86,12 +99,17 @@ export default function App() {
   }
 
   const onChangeCountryHandler = id => {
+    const selectedFilterUpdated = R.assoc('id', id, selectedFilter)
+    setSelectedFilter(selectedFilterUpdated)
+
     R.ifElse(
       R.equals('worldwide'),
       fetchWorldWideVaccine,
       fetchCountryVaccine,
     )(id)
   }
+
+  const MapSSR = dynamic(() => import('../components/Map'))
 
   return (
     <Wrapper>
@@ -102,6 +120,7 @@ export default function App() {
             onChangeCountry={onChangeCountryHandler}
           />
           <Cards data={{ ...selectedCountry, vaccinated }} />
+          <MapSSR countries={countries} filter={selectedFilter} />
         </LeftPanel>
         <RightPanel>
           <CardContent>
