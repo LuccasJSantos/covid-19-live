@@ -21,7 +21,7 @@ function Table({ countries }) {
     sortByCases,
     R.addIndex(R.map)(getCountryTableRows),
   )
-  debugger
+
   return <Container>{mapThroughCountries(countries)}</Container>
 }
 

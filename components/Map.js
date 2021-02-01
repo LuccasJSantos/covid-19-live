@@ -19,8 +19,6 @@ const Map = ({ countries, filter }) => {
     long: country.long,
   })
 
-  debugger
-
   const notWorldwide = () => filter.id !== 'worldwide'
 
   const filterByCountryIfNotWorldWide = R.when(
