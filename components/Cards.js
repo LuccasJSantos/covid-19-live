@@ -21,9 +21,10 @@ function Cards({ data }) {
         badgeColor='#2891AC'
       />
       <InfoCard
-        title='Recuperados'
+        title='Recuperadxs'
         value={data.recovered}
-        subValue={data.recovered / data.population}
+        subValue={data.todayRecovered}
+        isSubValuePercent={false}
         badgeColor='#6FAC28'
       />
       <InfoCard

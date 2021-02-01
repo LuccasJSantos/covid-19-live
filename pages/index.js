@@ -24,6 +24,7 @@ export default function App() {
     cases: country.cases,
     todayCases: country.todayCases,
     recovered: country.recovered,
+    todayRecovered: country.todayRecovered,
     deaths: country.deaths,
     todayDeaths: country.todayDeaths,
     tests: country.tests,
@@ -109,7 +110,6 @@ export default function App() {
           </CardContent>
         </RightPanel>
         {/* Map */}
-        {/* Ranking */}
       </Container>
     </Wrapper>
   )
