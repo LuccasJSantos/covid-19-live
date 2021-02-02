@@ -26,12 +26,16 @@ const Map = ({ countries, filter }) => {
     R.filter(byCountry),
   )
 
-  const countriesFilterAndMapper = R.pipe(
-    filterByCountryIfNotWorldWide,
-    R.map(getMapRequiredPropsFromCoutries),
-  )
+  // const countriesFilterAndMapper = R.pipe(
+  //   filterByCountryIfNotWorldWide,
+  //   R.map(getMapRequiredPropsFromCoutries),
+  // )
 
-  const countriesList = countriesFilterAndMapper(countries)
+  const countriesList = countries.map(getMapRequiredPropsFromCoutries)
+
+  const equalId = R.propEq('id', filter.id)
+
+  const selectedCountry = countriesList.find(equalId)
 
   const valuesList = countries.map(R.prop(filter.name))
 
@@ -60,7 +64,7 @@ const Map = ({ countries, filter }) => {
   const mapOptions =
     filter.id === 'worldwide'
       ? { center: [0, 0], zoom: 2 }
-      : { center: [countriesList[0].lat, countriesList[0].long], zoom: 3 }
+      : { center: [selectedCountry.lat, selectedCountry.long], zoom: 3 }
 
   return (
     <Container>
@@ -79,6 +83,18 @@ const Map = ({ countries, filter }) => {
               attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
             {countriesList.map(getCountryCircleMarker)}
+            {selectedCountry ? (
+              <CircleMarker
+                center={[selectedCountry.lat, selectedCountry.long]}
+                fillOpacity={1}
+                fillColor={filter.color}
+                radius={2}
+                color={filter.color}
+                weight={1}
+              />
+            ) : (
+              ''
+            )}
           </MapContainer>
         </CardContent>
       </Card>
