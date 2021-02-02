@@ -44,12 +44,12 @@ const Container = styled.div`
 const Badge = styled.div`
   position: absolute;
   width: ${props => (props.selected ? '12px' : '6px')};
-  height: ${props => (props.selected ? '123px' : '40px')};
+  height: ${props => (props.selected ? '124px' : '40px')};
   background-color: ${props => props.color};
-  top: ${props => (props.selected ? '24%' : '50%')};
-  left: ${props => (props.selected ? '-6px' : '-3px')};
-  border-radius: ${props => (props.selected ? '44px 0 0 44px' : '44px')};
-  transition: all ease-out 0.3s;
+  top: ${props => (props.selected ? '40px' : '50%')};
+  left: ${props => (props.selected ? '-3px' : '-3px')};
+  border-radius: ${props => (props.selected ? '5px 0 0 5px' : '44px')};
+  transition: all ease-out 0.2s;
 `
 
 const CardStyled = styled(Card)`
