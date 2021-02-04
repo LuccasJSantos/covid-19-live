@@ -38,7 +38,6 @@ function InfoCard({
 
 const Container = styled.div`
   position: relative;
-  cursor: pointer;
 `
 
 const Badge = styled.div`
@@ -55,6 +54,7 @@ const Badge = styled.div`
 const CardStyled = styled(Card)`
   min-width: 200px;
   margin-top: 40px;
+  cursor: ${onClick ? 'pointer' : ''};
 `
 
 const CardContainer = styled(CardContent)`
