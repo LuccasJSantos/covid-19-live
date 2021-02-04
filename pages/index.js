@@ -65,10 +65,10 @@ export default function App() {
       .then(R.map(getRequiredPropsFromCountries))
       .then(setCountries)
 
-    fetchWorldWideVaccine()
+    fetchWorlwideData()
   }, [])
 
-  const fetchWorldWideVaccine = () => {
+  const fetchWorlwideData = () => {
     const fetchVaccineAll = () => {
       return fetch(
         'https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=1',
@@ -83,7 +83,7 @@ export default function App() {
       .then(setVaccineAll)
   }
 
-  const fetchCountryVaccine = id => {
+  const fetchCountryData = id => {
     const fetchVaccineCountry = () => {
       return fetch(
         `https://disease.sh/v3/covid-19/vaccine/coverage/countries/${id}?lastdays=1`,
@@ -102,11 +102,7 @@ export default function App() {
     const selectedFilterUpdated = R.assoc('id', id, selectedFilter)
     setSelectedFilter(selectedFilterUpdated)
 
-    R.ifElse(
-      R.equals('worldwide'),
-      fetchWorldWideVaccine,
-      fetchCountryVaccine,
-    )(id)
+    R.ifElse(R.equals('worldwide'), fetchWorlwideData, fetchCountryData)(id)
   }
 
   const onChangeSelectedFilter = name => {
