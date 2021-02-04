@@ -19,6 +19,7 @@ export default function App() {
     color: '#2891AC',
     id: 'worldwide',
   })
+  const [chartData, setChartData] = useState({})
 
   const getRequiredPropsFromCountries = country => ({
     country: country.country,
@@ -75,12 +76,20 @@ export default function App() {
       ).then(response => response.json())
     }
 
+    const fetchChartEvolution = () => {
+      return fetch(
+        'https://disease.sh/v3/covid-19/historical/all?lastdays=30',
+      ).then(response => response.json())
+    }
+
     fetch('https://disease.sh/v3/covid-19/all')
       .then(response => response.json())
       .then(getRequiredPropsFromSelected)
       .then(setSelectedCountry)
       .then(fetchVaccineAll)
       .then(setVaccineAll)
+      .then(fetchChartEvolution)
+      .then(setChartData)
   }
 
   const fetchCountryData = id => {
@@ -90,12 +99,22 @@ export default function App() {
       ).then(response => response.json())
     }
 
+    const fetchChartEvolutionCountry = () => {
+      return fetch(
+        `https://disease.sh/v3/covid-19/historical/${id}?lastdays=30`,
+      )
+        .then(response => response.json())
+        .then(data => data.timeline)
+    }
+
     fetch(`https://disease.sh/v3/covid-19/countries/${id}?strict=true`)
       .then(response => response.json())
       .then(getRequiredPropsFromSelected)
       .then(setSelectedCountry)
       .then(fetchVaccineCountry)
       .then(setVaccineCountry)
+      .then(fetchChartEvolutionCountry)
+      .then(setChartData)
   }
 
   const onChangeCountryHandler = id => {
@@ -118,6 +137,8 @@ export default function App() {
 
   const MapSSR = dynamic(() => import('../components/Map'))
 
+  const LineChartSSR = dynamic(() => import('../components/LineChart'))
+
   return (
     <Wrapper>
       <Container>
@@ -139,6 +160,16 @@ export default function App() {
             <SectionTitle>Ranking de casos</SectionTitle>
             <Table countries={countries} />
           </CardContent>
+          <CardContent>
+            <SectionTitle>Acumulado (30 dias)</SectionTitle>
+            <LineChartSSR data={chartData} title='Casos' type='cases' />
+            <LineChartSSR
+              data={chartData}
+              title='Recuperadxs'
+              type='recovered'
+            />
+            <LineChartSSR data={chartData} title='Mortes' type='deaths' />
+          </CardContent>
         </RightPanel>
         {/* Map */}
       </Container>
@@ -148,7 +179,7 @@ export default function App() {
 
 const Wrapper = styled.div`
   max-width: 1080px;
-  margin: 30px auto 0 auto;
+  margin: 30px auto 30px auto;
 `
 
 const Container = styled.div`

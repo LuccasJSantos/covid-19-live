@@ -26,7 +26,7 @@ function Table({ countries }) {
 }
 
 const Container = styled.div`
-  max-height: 450px;
+  max-height: 350px;
   overflow-y: scroll;
 `
 
