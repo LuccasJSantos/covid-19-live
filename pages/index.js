@@ -9,6 +9,9 @@ import Cards from '../components/Cards'
 import Table from '../components/Table'
 
 import { getByName } from '../models/InfoCard'
+import axios from '../axios'
+import diseaseReq from '../requests/disease'
+import disease from '../requests/disease'
 
 export default function App() {
   const [countries, setCountries] = useState([])
@@ -51,70 +54,59 @@ export default function App() {
     setVaccinated(data[1])
   }
 
-  const setVaccineCountry = ({ timeline }) => {
-    if (!timeline) {
+  const setVaccineCountry = vaccine => {
+    if (!vaccine) {
       return setVaccinated(0)
     }
-    const [data] = Object.entries(timeline)
+    const [data] = Object.entries(vaccine.timeline)
 
     setVaccinated(data[1])
   }
 
-  useEffect(() => {
-    fetch('https://disease.sh/v3/covid-19/countries')
-      .then(response => response.json())
-      .then(R.map(getRequiredPropsFromCountries))
-      .then(setCountries)
+  useEffect(async () => {
+    const countriesGeneral = await axios(diseaseReq.countriesGeneral()).then(
+      R.map(getRequiredPropsFromCountries),
+    )
 
-    fetchWorlwideData()
+    await fetchWorlwideData()
+
+    setCountries(countriesGeneral)
   }, [])
 
-  const fetchWorlwideData = () => {
-    const fetchVaccineAll = () => {
-      return fetch(
-        'https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=1',
-      ).then(response => response.json())
-    }
+  const fetchWorlwideData = async () => {
+    const worldwide = await axios(diseaseReq.worldwide()).then(
+      getRequiredPropsFromSelected,
+    )
 
-    const fetchChartEvolution = () => {
-      return fetch(
-        'https://disease.sh/v3/covid-19/historical/all?lastdays=30',
-      ).then(response => response.json())
-    }
+    const worldwideVaccines = await axios(diseaseReq.worldwideVaccines())
 
-    fetch('https://disease.sh/v3/covid-19/all')
-      .then(response => response.json())
-      .then(getRequiredPropsFromSelected)
-      .then(setSelectedCountry)
-      .then(fetchVaccineAll)
-      .then(setVaccineAll)
-      .then(fetchChartEvolution)
-      .then(setChartData)
+    const worldwideHistorical = await axios(diseaseReq.worldwideHistorical())
+
+    setSelectedCountry(worldwide)
+    setVaccineAll(worldwideVaccines)
+    setChartData(worldwideHistorical)
+
+    return Promise.resolve()
   }
 
-  const fetchCountryData = id => {
-    const fetchVaccineCountry = () => {
-      return fetch(
-        `https://disease.sh/v3/covid-19/vaccine/coverage/countries/${id}?lastdays=1`,
-      ).then(response => response.json())
-    }
+  const fetchCountryData = async id => {
+    const country = await axios(diseaseReq.byCountryGeneral(id)).then(
+      getRequiredPropsFromSelected,
+    )
 
-    const fetchChartEvolutionCountry = () => {
-      return fetch(
-        `https://disease.sh/v3/covid-19/historical/${id}?lastdays=30`,
-      )
-        .then(response => response.json())
-        .then(data => data.timeline)
-    }
+    const countryVaccines = await axios(diseaseReq.byCountryVaccines(id)).catch(
+      console.error,
+    )
 
-    fetch(`https://disease.sh/v3/covid-19/countries/${id}?strict=true`)
-      .then(response => response.json())
-      .then(getRequiredPropsFromSelected)
-      .then(setSelectedCountry)
-      .then(fetchVaccineCountry)
-      .then(setVaccineCountry)
-      .then(fetchChartEvolutionCountry)
-      .then(setChartData)
+    const countryHistorical = await axios(
+      diseaseReq.byCountryHistorical(id),
+    ).then(res => res.timeline)
+
+    setSelectedCountry(country)
+    setVaccineCountry(countryVaccines)
+    setChartData(countryHistorical)
+
+    return Promise.resolve()
   }
 
   const onChangeCountryHandler = id => {

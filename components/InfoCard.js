@@ -23,7 +23,7 @@ function InfoCard({
   return (
     <Container onClick={() => onClick(name)}>
       <Badge color={badgeColor} selected={selected} />
-      <CardStyled clickable={onClick}>
+      <CardStyled>
         <CardContainer>
           <h3>{title}</h3>
           <CardFooter>
@@ -54,7 +54,6 @@ const Badge = styled.div`
 const CardStyled = styled(Card)`
   min-width: 200px;
   margin-top: 40px;
-  cursor: ${props => (props.clickable ? 'pointer' : '')};
 `
 
 const CardContainer = styled(CardContent)`
