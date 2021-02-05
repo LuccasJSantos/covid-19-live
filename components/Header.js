@@ -9,7 +9,7 @@ function Header({ countries, color, onChangeCountry }) {
   const [flag, setFlag] = useState('')
 
   const getCountryMenuItems = ({ id, country }) => (
-    <MenuItem key={id} value={id}>
+    <MenuItem key={`countries_header_${id || country}`} value={id}>
       {country}
     </MenuItem>
   )

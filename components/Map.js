@@ -43,6 +43,10 @@ const Map = ({ countries, filter }) => {
   const minValue = Math.min(...valuesList)
 
   const getCountryCircleMarker = country => {
+    if (country.id === null) {
+      return ''
+    }
+
     const radius = mapRange(country.value, minValue, maxValue, 5, 50)
 
     return (
@@ -53,6 +57,7 @@ const Map = ({ countries, filter }) => {
         radius={radius}
         color={filter.color}
         weight={2}
+        key={country.id}
       >
         <Popup>
           {country.country}: {numberAbrevFormat(country.value)}

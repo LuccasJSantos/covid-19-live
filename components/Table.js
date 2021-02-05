@@ -4,14 +4,20 @@ import styled from 'styled-components'
 import { numberFormat } from '../util'
 
 function Table({ countries }) {
-  const getCountryTableRows = ({ id, country, cases }, i) => (
-    <TableRow key={id} odd={i % 2}>
-      <td>{country}</td>
-      <td>
-        <strong style={{ fontWeight: 600 }}>{numberFormat(cases)}</strong>
-      </td>
-    </TableRow>
-  )
+  const getCountryTableRows = ({ id, country, cases }, i) => {
+    if (id === null) {
+      return ''
+    }
+
+    return (
+      <TableRow key={`countries_table_${id}`} odd={i % 2}>
+        <td>{country}</td>
+        <td>
+          <strong style={{ fontWeight: 600 }}>{numberFormat(cases)}</strong>
+        </td>
+      </TableRow>
+    )
+  }
 
   const byCases = R.descend(R.prop('cases'))
 
