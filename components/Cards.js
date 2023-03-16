@@ -10,7 +10,7 @@ function Cards({ data, selected, onChangeFilter }) {
   return (
     <Container>
       <PopulationContainer>
-        <PopulationHeader>População</PopulationHeader>
+        <PopulationHeader>População Atual</PopulationHeader>
         <PopulationValue>{numberAbrevFormat(data.population)}</PopulationValue>
       </PopulationContainer>
       <InfoCard
